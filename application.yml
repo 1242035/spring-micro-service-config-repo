@@ -14,7 +14,7 @@ client:
     check_token_url: ${app.gateway}/oauth/check_token
 db:
     uid: root
-    pwd: mysql
+    pwd:
     drive:
         oracle: oracle:thin
         mysql: mysql
@@ -38,7 +38,7 @@ spring:
     security:
         user:
             name: root
-            password:
+            password: secret
     datasource:
         url: ${db.url.mysql}
         username: ${db.uid}
