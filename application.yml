@@ -28,7 +28,7 @@ db:
         oracle: oracle
         mysql: mysql
     url:
-        mysql: jdbc:mysql://127.0.0.1:3306/template?useSSL=false
+        mysql: jdbc:mysql://10.0.10.250:3306/template?useSSL=false
         oracle: jdbc:oracle:thin:@10.0.10.250:1521/template
 spring:
     main:
