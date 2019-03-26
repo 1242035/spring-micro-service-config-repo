@@ -62,7 +62,7 @@ spring:
         hibernate:
             naming: 
                 physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
-            ddl-auto: create
+            ddl-auto: validate
     data:
         repositories:
             enabled: true
