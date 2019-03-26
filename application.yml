@@ -14,7 +14,7 @@ client:
     check_token_url: ${app.gateway}/oauth/check_token
 db:
     uid: root
-    pwd:
+    pwd: mysql
     drive:
         oracle: oracle:thin
         mysql: mysql
@@ -326,4 +326,4 @@ management:
         include: hystrix.stream, info, health, refresh
 #variable
 check-user-scopes: false
-token-expire-time-day: 30
+token-expire-time-day: 60
