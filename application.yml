@@ -1,0 +1,329 @@
+app:
+    host: 127.0.0.1
+    gateway: 127.0.0.1:8080
+cors:
+    domains: '*'
+topics:
+    stream: test
+    notify: uyp7gdtb-notification
+client:
+    client_id: client_id
+    client_secret: 123456
+    grant_type: password
+    token_url: ${app.gateway}/oauth/token
+    check_token_url: ${app.gateway}/oauth/check_token
+db:
+    uid: root
+    pwd: mysql
+    drive:
+        oracle: oracle:thin
+        mysql: mysql
+    driver-class-name:
+        oracle: oracle.jdbc.OracleDriver
+        mysql: com.mysql.cj.jdbc.Driver
+    jpa.dialect:
+        oracle: org.hibernate.dialect.Oracle10gDialect
+        mysql: org.hibernate.dialect.MySQL5Dialect
+    platform:
+        oracle: oracle
+        mysql: mysql
+    url:
+        mysql: jdbc:mysql://127.0.0.1:3306/template?useSSL=false
+        oracle: jdbc:oracle:thin:@10.0.10.250:1521/template
+spring:
+    main:
+        allowBeanDefinitionOverriding: true
+    #autoconfigure.exclude: org.springframework.cloud.stream.binder.rabbit.config.RabbitServiceAutoConfiguration
+    
+    security:
+        user:
+            name: root
+            password:
+    datasource:
+        url: ${db.url.mysql}
+        username: ${db.uid}
+        password: ${db.pwd}
+        driver-class-name: ${db.driver-class-name.mysql}
+        tomcat:
+            test-while-idle: true
+            validation-query: SELECT 1
+        initialization-mode: never
+        platform: ${db.platform.mysql}
+    jpa:
+        show-sql: false
+        generate-ddl: true
+        properties:
+            hibernate: 
+                dialect: ${db.jpa.dialect.mysql}
+                type: trace
+                format_sql: true
+                show-sql: true
+                #use_sql_comments: true
+        hibernate:
+            naming: 
+                physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+            ddl-auto: create
+    data:
+        repositories:
+            enabled: true
+    cloud:
+        refresh:
+              enabled: false
+        bus:
+              enabled: true
+        stream:
+              defaultBinder: remote_rabbit
+              bindings:
+                   messages-in:
+                       binder: remote_rabbit
+                       destination: ${topics.stream}
+                       contentType: application/json
+                   messages-out:
+                       binder: remote_rabbit
+                       destination: ${topics.stream}
+                       contentType: application/json
+                   input:
+                        binder: remote_rabbit
+                   output:
+                         binder: remote_rabbit
+                       
+              binders:
+                    local_kafka:
+                        default-candidate: false
+                        type: kafka
+                        environment:
+                             spring:
+                                   cloud:
+                                        stream:
+                                              kafka:
+                                                   binder:
+                                                         brokers: localhost:9092
+                    remote_kafka:
+                        default-candidate: false
+                        type: kafka
+                        environment:
+                            spring:
+                                  cloud:
+                                       stream:
+                                             kafka:
+                                                  binder:
+                                                        brokers: 10.0.10.250:9092
+                    local_rabbit:
+                        type: rabbit
+                        default-candidate: false
+                        environment:
+                             spring:
+                                   rabbitmq:
+                                        host: localhost
+                                        port: 5672
+                                        username: guest
+                                        password: guest
+                                        virtual-host: /
+                    remote_rabbit:
+                        type: rabbit
+                        #default-candidate: true
+                        environment:
+                             spring:
+                                   rabbitmq:
+                                        host: 10.0.10.250
+                                        port: 5672
+                                        username: admin
+                                        password: admin
+                                        virtual-host: /
+        config:
+            discovery.enabled: true
+            discovery.service-id: config
+            uri: http://${app.host}:8888
+            username: root
+            password: secret
+        gateway:
+            filter:
+                  remove-non-proxy-headers:
+                        headers:
+                        - dummy
+            routes:
+            
+            - id: dgia-websocket-http
+              uri: lb://dgia
+              predicates:
+              - Path=/realtime/info/**
+            - id: dgia-websocket
+              uri: lb:ws://dgia
+              predicates:
+              - Path=/realtime/**
+            - id: stream-http
+              uri: lb://stream
+              predicates:
+              - Path=/stream/info/**
+            - id: stream-socket
+              uri: lb:ws://stream
+              predicates:
+              - Path=/stream/**
+            - id: oauth
+              uri: lb://oauth
+              predicates:
+              - Path=/oauth/**
+            - id: privacy
+              uri: lb://privacy
+              predicates:
+              - Path=/v1/privacy/**
+              filters:
+              - StripPrefix=2
+            - id: static
+              uri: lb://static
+              predicates:
+              - Path=/static/**
+              filters:
+              - StripPrefix=1
+            - id: media
+              uri: lb://media
+              predicates:
+              - Path=/media/**
+              filters:
+              - StripPrefix=1
+            - id: dgia-api
+              uri: lb://dgia
+              predicates:
+              - Path=/**
+    zipkin:
+        baseUrl: http://${app.host}:9411/
+
+    
+logging:
+    level:
+        ROOT: INFO
+        org.springframework.web: DEBUG
+security:
+    oauth2:
+        resource:
+            jwt: 
+               key-value: |
+                   -----BEGIN PUBLIC KEY-----
+                   MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1t9wCc2TG91cvSOUCJAz
+                   5xWJxYaxgpQfz+H5GWqUWIrU2SDpwrLd9ewIKjdxcaMSDeLb3ydP0a8WyWvUbBna
+                   A2vG3QdL+2D+9qKOnbT5FIttHwKWjElEl3zAHtyDi2J+bRbX3sUJPTmkPv5Yu9ir
+                   hB9riy5U3GygaAy4nkvPYuO5XW9izGR5pdsfJmabNEgUScxKp3ns3f0DOHFkZCoo
+                   yuSDFDQMYNSMcPHRZjU8BpSXqOYfO/y3QFIagnaMFlIyWcyRXVN1o25z9sVZuJn+
+                   k+gTskfgBW/ttR553VaxfP/r5qd7zeRF2BO6mTLcIqyNeadwxou1JfC1GEJDeKW9
+                   qQIDAQAB
+                   -----END PUBLIC KEY-----
+
+eureka:
+    instance:
+        #instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+        #hostname: ${vcap.application.uris[0]}
+        leaseRenewalIntervalInSeconds: 10
+        preferIpAddress: false
+    client:
+        healthcheck: true
+        registerWithEureka: true
+        fetchRegistry: true
+        serviceUrl:
+            defaultZone: http://${app.host}:8761/eureka/
+            #multi registry - create eureka1, eureka2 => 127.0.0.1 at hosts file if run multi instance same server
+            #defaultZone: http://eureka1:8761/eureka/,http://eureka2:8762/eureka/
+    server:
+        waitTimeInMsWhenSyncEmpty: 0
+    dashboard:
+        enabled: true
+hystrix:
+    command:
+        default:
+            execution: 
+                isolation: 
+                    thread: 
+                        timeoutInMilliseconds: 120000
+ribbon:
+    ReadTimeout: 100000
+    eureka:
+        enabled: true
+        ReadTimeout: 120000
+        ConnectTimeout: 120000
+#not use
+#zuul:
+#  host: 
+#      socketTimeoutMillis: 10000
+#  ignoreSecurityHeaders: false
+#  add-proxy-headers: true
+#  routes:
+#    oauth:
+#      path: '/oauth/**'
+#      service-id: oauth
+#      sensitive-headers:
+#      strip-prefix: false
+#    privacy:
+#      path: '/v1/private/**'
+#      service-id: privacy
+#      sensitive-headers:
+#      strip-prefix: true
+#    auction:
+#      path: '/v1/auction/**'
+#      service-id: auction
+#      sensitive-headers:
+#      strip-prefix: true
+#    open:
+#      path: '/v1/public/**'
+#      service-id: open
+#      sensitive-headers:
+#      strip-prefix: true
+#    dgia:
+#      path: '/v1/dgia/**'
+#      service-id: dgia
+#      sensitive-headers: Upgrade, Connection, X-Real-IP, X-Forwarded-For, Host, Sec-WebSocket-Key, Sec-WebSocket-Protocol, Sec-WebSocket-Version, Sec-WebSocket-Accept, Origin
+#      strip-prefix: true
+#  ws:
+#      brokerages:
+#        dgia:
+#          end-points: /realtime/auction/*
+#          brokers: /topic
+#  ratelimit:
+#    key-prefix: __cache
+#    enabled: true
+#    repository: BUCKET4J_IGNITE
+#    behind-proxy: true
+#    default-policy-list: #optional - will apply unless specific policy exists
+#      - limit: 10 #optional - request number limit per refresh interval window
+#        quota: 1000 #optional - request time limit per refresh interval window (in seconds)
+#        refresh-interval: 60 #default value (in seconds)
+#        type: #optional
+#          - origin
+#          - url
+#    policy-list:
+#      oauth:
+#        - limit: 10 #optional - request number limit per refresh interval window
+#          quota: 1000 #optional - request time limit per refresh interval window (in seconds)
+#          refresh-interval: 60 #default value (in seconds)
+#          type: #optional
+#            - origin
+#            - url
+#      privacy:
+#        - limit: 10 #optional - request number limit per refresh interval window
+#          quota: 1000 #optional - request time limit per refresh interval window (in seconds)
+#          refresh-interval: 60 #default value (in seconds)
+#          type: #optional
+#            - origin
+#            - url
+#      open:
+#        - limit: 10 #optional - request number limit per refresh interval window
+#          quota: 1000 #optional - request time limit per refresh interval window (in seconds)
+#          refresh-interval: 60 #default value (in seconds)
+#          type: #optional
+#            - origin
+#            - url
+#      auction:
+#        - limit: 10 #optional - request number limit per refresh interval window
+#         quota: 1000 #optional - request time limit per refresh interval window (in seconds)
+#          refresh-interval: 60 #default value (in seconds)
+#          type: #optional
+#            - origin
+#            - url
+
+management:
+  security.enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: hystrix.stream, info, health
+#variable
+check-user-scopes: false
+token-expire-time-day: 30
