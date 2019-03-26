@@ -138,11 +138,10 @@ spring:
             password: secret
         gateway:
             filter:
-                  remove-non-proxy-headers:
-                        headers:
-                        - dummy
+                remove-non-proxy-headers:
+                    headers:
+                     - dummy
             routes:
-            
             - id: dgia-websocket-http
               uri: lb://dgia
               predicates:
@@ -181,8 +180,8 @@ spring:
               - Path=/media/**
               filters:
               - StripPrefix=1
-            - id: dgia-api
-              uri: lb://dgia
+            - id: dashboard
+              uri: lb://dashboard
               predicates:
               - Path=/**
     zipkin:
