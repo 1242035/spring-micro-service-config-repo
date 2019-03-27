@@ -30,6 +30,16 @@ db:
     url:
         mysql: jdbc:mysql://10.0.10.250:3306/template?useSSL=false
         oracle: jdbc:oracle:thin:@10.0.10.250:1521/template
+stream:
+    rabbitmq:
+        host: 10.0.10.250
+        port: 5672
+        username: admin
+        password: admin
+        virtual-host: /
+    kafka:
+        binder:
+            brokers: 10.0.10.250:9092
 spring:
     main:
         allowBeanDefinitionOverriding: true
@@ -66,6 +76,7 @@ spring:
     data:
         repositories:
             enabled: true
+    rabbitmq: ${stream.rabbit}
     cloud:
         refresh:
               enabled: false
@@ -75,64 +86,32 @@ spring:
               defaultBinder: remote_rabbit
               bindings:
                    messages-in:
-                       binder: remote_rabbit
+                       binder: rabbit
                        destination: ${topics.stream}
                        contentType: application/json
                    messages-out:
-                       binder: remote_rabbit
+                       binder: rabbit
                        destination: ${topics.stream}
                        contentType: application/json
-                   input:
-                        binder: remote_rabbit
-                   output:
-                         binder: remote_rabbit
                        
               binders:
-                    local_kafka:
+                    kafka:
                         default-candidate: false
                         type: kafka
                         environment:
                              spring:
                                    cloud:
                                         stream:
-                                              kafka:
-                                                   binder:
-                                                         brokers: localhost:9092
-                    remote_kafka:
+                                            kafka: ${stream.kafka}
+                    rabbit:
+                        type: rabbit
                         default-candidate: false
-                        type: kafka
                         environment:
                             spring:
-                                  cloud:
-                                       stream:
-                                             kafka:
-                                                  binder:
-                                                        brokers: 10.0.10.250:9092
-                    local_rabbit:
-                        type: rabbit
-                        default-candidate: false
-                        environment:
-                             spring:
-                                   rabbitmq:
-                                        host: localhost
-                                        port: 5672
-                                        username: guest
-                                        password: guest
-                                        virtual-host: /
-                    remote_rabbit:
-                        type: rabbit
-                        #default-candidate: true
-                        environment:
-                             spring:
-                                   rabbitmq:
-                                        host: 10.0.10.250
-                                        port: 5672
-                                        username: admin
-                                        password: admin
-                                        virtual-host: /
+                                rabbitmq: ${stream.rabbit}
+                                        
         config:
             discovery.enabled: true
-            discovery.service-id: config
             uri: http://${app.host}:8888
             username: root
             password: secret
