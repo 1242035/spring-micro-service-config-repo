@@ -88,6 +88,8 @@ spring:
     cloud:
         bus:
             enabled: true
+            trace: 
+                enabled: true
         stream:
             bindings:
                 messages-in:
