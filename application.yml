@@ -302,7 +302,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: hystrix.stream, info, health, refresh
+        include: hystrix.stream, info, health, refresh, bus-refresh, bus-env
 #variable
 check-user-scopes: false
 token-expire-time-day: 40
