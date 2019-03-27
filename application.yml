@@ -300,7 +300,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: *
+        include: hystrix.stream, info, health, refresh, env, bus-refresh, bus-env
 #variable
 check-user-scopes: false
 token-expire-time-day: 40
