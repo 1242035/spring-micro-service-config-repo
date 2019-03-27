@@ -177,7 +177,9 @@ spring:
             - id: dashboard
               uri: lb://dashboard
               predicates:
-              - Path=/**
+              - Path=/admin/**
+              filters:
+              - StripPrefix=1
     zipkin:
         baseUrl: ${zipkin}
 
