@@ -1,3 +1,4 @@
+#config variable
 app:
     host: 127.0.0.1
     gateway: 127.0.0.1:8080
@@ -40,11 +41,18 @@ stream:
     kafka:
         binder:
             brokers: 10.0.10.250:9092
+zipkin: http://${app.host}:9411/
+
+#multi registry - create eureka1, eureka2 => 127.0.0.1 at hosts file if run multi instance same server
+#defaultZone: http://eureka1:8761/eureka/,http://eureka2:8762/eureka/
+eureka: http://${app.host}:8761/eureka/
+
+
+#system config
 spring:
     main:
         allowBeanDefinitionOverriding: true
-    #autoconfigure.exclude: org.springframework.cloud.stream.binder.rabbit.config.RabbitServiceAutoConfiguration
-    
+        
     security:
         user:
             name: root
@@ -81,40 +89,34 @@ spring:
         refresh:
               enabled: false
         bus:
-              enabled: true
+            enabled: true
         stream:
-              defaultBinder: remote_rabbit
-              bindings:
-                   messages-in:
-                       binder: rabbit
-                       destination: ${topics.stream}
-                       contentType: application/json
-                   messages-out:
-                       binder: rabbit
-                       destination: ${topics.stream}
-                       contentType: application/json
+            bindings:
+                messages-in:
+                    binder: rabbit
+                    destination: ${topics.stream}
+                    contentType: application/json
+                messages-out:
+                    binder: rabbit
+                    destination: ${topics.stream}
+                    contentType: application/json
                        
-              binders:
-                    kafka:
-                        default-candidate: false
-                        type: kafka
-                        environment:
-                             spring:
-                                   cloud:
-                                        stream:
-                                            kafka: ${stream.kafka}
-                    rabbit:
-                        type: rabbit
-                        default-candidate: false
-                        environment:
-                            spring:
-                                rabbitmq: ${stream.rabbit}
-                                        
-        config:
-            discovery.enabled: true
-            uri: http://${app.host}:8888
-            username: root
-            password: secret
+            binders:
+                kafka:
+                    default-candidate: false
+                    type: kafka
+                    environment:
+                        spring:
+                            cloud:
+                                stream:
+                                    kafka: ${stream.kafka}
+                rabbit:
+                    type: rabbit
+                    default-candidate: false
+                    environment:
+                        spring:
+                            rabbitmq: ${stream.rabbit}
+            
         gateway:
             filter:
                 remove-non-proxy-headers:
@@ -164,7 +166,7 @@ spring:
               predicates:
               - Path=/**
     zipkin:
-        baseUrl: http://${app.host}:9411/
+        baseUrl: ${zipkin}
 
     
 logging:
@@ -197,9 +199,8 @@ eureka:
         registerWithEureka: true
         fetchRegistry: true
         serviceUrl:
-            defaultZone: http://${app.host}:8761/eureka/
-            #multi registry - create eureka1, eureka2 => 127.0.0.1 at hosts file if run multi instance same server
-            #defaultZone: http://eureka1:8761/eureka/,http://eureka2:8762/eureka/
+            defaultZone: ${eureka}
+            
     server:
         waitTimeInMsWhenSyncEmpty: 0
     dashboard:
