@@ -5,7 +5,7 @@ app:
 cors:
     domains: '*'
 topics:
-    stream: test_ttt
+    stream: test__ttttt
     notify: uyp7gdtb-notification
 client:
     client_id: client_id
@@ -123,11 +123,11 @@ spring:
                     headers:
                      - dummy
             routes:
-            - id: dgia-websocket-http
-              uri: lb://dgia
+            - id: action-websocket-http
+              uri: lb://action
               predicates:
               - Path=/realtime/info/**
-            - id: dgia-websocket
+            - id: action-websocket
               uri: lb:ws://dgia
               predicates:
               - Path=/realtime/**
