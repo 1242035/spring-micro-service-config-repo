@@ -41,7 +41,7 @@ stream:
     kafka:
         binder:
             brokers: 10.0.10.250:9092
-zipkin: http://${app.host}:9411/
+zipkin: http://10.0.10.250:9411/
 
 #multi registry - create eureka1, eureka2 => 127.0.0.1 at hosts file if run multi instance same server
 #defaultZone: http://eureka1:8761/eureka/,http://eureka2:8762/eureka/
