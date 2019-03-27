@@ -45,7 +45,7 @@ zipkin: http://10.0.10.250:9411/
 
 #multi registry - create eureka1, eureka2 => 127.0.0.1 at hosts file if run multi instance same server
 #defaultZone: http://eureka1:8761/eureka/,http://eureka2:8762/eureka/
-eureka_zone: http://${app.host}:8761/eureka/
+eureka_zone: http://10.0.10.250:8761/eureka/
 
 
 #system config
