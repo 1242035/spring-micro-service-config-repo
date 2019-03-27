@@ -37,7 +37,7 @@ stream:
         port: 5672
         username: admin
         password: admin
-        virtual-host: /
+        virtualHost: /
     kafka:
         binder:
             brokers: 10.0.10.250:9092
@@ -84,7 +84,13 @@ spring:
     data:
         repositories:
             enabled: true
-    rabbitmq: ${stream.rabbitmq}
+    rabbitmq:
+        host: ${stream.rabbitmq.host}
+        port: ${stream.rabbitmq.port}
+        username: ${stream.rabbitmq.username}
+        password: ${stream.rabbitmq.password}
+        virtual-host: ${stream.rabbitmq.virtualHost}
+    
     cloud:
         bus:
             enabled: true
@@ -109,13 +115,20 @@ spring:
                         spring:
                             cloud:
                                 stream:
-                                    kafka: ${stream.kafka}
+                                    kafka: 
+                                        binder:
+                                            brokers: ${stream.kafka.binder.brokers}
                 rabbitmq:
                     type: rabbit
                     default-candidate: false
                     environment:
                         spring:
-                            rabbitmq: ${stream.rabbitmq}
+                            rabbitmq: 
+                                host: ${stream.rabbitmq.host}
+                                port: ${stream.rabbitmq.port}
+                                username: ${stream.rabbitmq.username}
+                                password: ${stream.rabbitmq.password}
+                                virtual-host: ${stream.rabbitmq.virtualHost}
             
         gateway:
             filter:
