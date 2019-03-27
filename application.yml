@@ -84,7 +84,7 @@ spring:
     data:
         repositories:
             enabled: true
-    rabbitmq: ${stream.rabbit}
+    rabbitmq: ${stream.rabbitmq}
     cloud:
         refresh:
               enabled: false
@@ -93,11 +93,11 @@ spring:
         stream:
             bindings:
                 messages-in:
-                    binder: rabbit
+                    binder: rabbitmq
                     destination: ${topics.stream}
                     contentType: application/json
                 messages-out:
-                    binder: rabbit
+                    binder: rabbitmq
                     destination: ${topics.stream}
                     contentType: application/json
                        
@@ -110,12 +110,12 @@ spring:
                             cloud:
                                 stream:
                                     kafka: ${stream.kafka}
-                rabbit:
+                rabbitmq:
                     type: rabbit
                     default-candidate: false
                     environment:
                         spring:
-                            rabbitmq: ${stream.rabbit}
+                            rabbitmq: ${stream.rabbitmq}
             
         gateway:
             filter:
