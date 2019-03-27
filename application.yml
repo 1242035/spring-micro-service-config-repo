@@ -86,8 +86,6 @@ spring:
             enabled: true
     rabbitmq: ${stream.rabbitmq}
     cloud:
-        refresh:
-            enabled: true
         bus:
             enabled: true
         stream:
