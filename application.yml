@@ -15,7 +15,7 @@ client:
     check_token_url: ${app.gateway}/oauth/check_token
 db:
     uid: root
-    pwd: mysql
+    pwd: 123456
     drive:
         oracle: oracle:thin
         mysql: mysql
@@ -29,8 +29,8 @@ db:
         oracle: oracle
         mysql: mysql
     url:
-        mysql: jdbc:mysql://10.0.10.250:3306/template?useSSL=false
-        oracle: jdbc:oracle:thin:@10.0.10.250:1521/template
+        mysql: jdbc:mysql://127.0.0.1:3306/template?useSSL=false
+        oracle: jdbc:oracle:thin:@127.0.0.1:1521/template
 stream:
     rabbitmq:
         host: 10.0.10.250
@@ -40,12 +40,12 @@ stream:
         virtualHost: /
     kafka:
         binder:
-            brokers: 10.0.10.250:9092
-zipkin: http://10.0.10.250:9411/
+            brokers: 127.0.0.1:9092
+zipkin: http://127.0.0.1:9411/
 
 #multi registry - create eureka1, eureka2 => 127.0.0.1 at hosts file if run multi instance same server
 #defaultZone: http://eureka1:8761/eureka/,http://eureka2:8762/eureka/
-eureka_zone: http://10.0.10.250:8761/eureka/
+eureka_zone: http://127.0.0.1:8761/eureka/
 
 
 #system config
